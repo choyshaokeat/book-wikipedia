@@ -12,15 +12,15 @@ const Paginator: React.FC<PaginatorProps> = ({
   setPagination,
 }) => {
   const pages: (number | string)[] = [];
-  if (totalPage <= 10) {
+  if (totalPage <= 3) {
     for (let i = 0; i < totalPage; i++) pages.push(i);
   } else {
     pages.push(0);
-    if (pagination > 3) pages.push("...");
-    const start = Math.max(1, pagination - 2);
-    const end = Math.min(totalPage - 2, pagination + 2);
+    if (pagination > 1) pages.push("...");
+    const start = Math.max(1, pagination - 1);
+    const end = Math.min(totalPage - 2, pagination + 1);
     for (let i = start; i <= end; i++) pages.push(i);
-    if (pagination < totalPage - 4) pages.push("...");
+    if (pagination < totalPage - 3) pages.push("...");
     pages.push(totalPage - 1);
   }
   return (

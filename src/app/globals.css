@@ -36,3 +36,8 @@ button,
 input {
   font: inherit;
 }
+
+.saved-books-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(58, 58, 58) transparent;
+}
