@@ -1,19 +1,21 @@
 "use client";
 
-import { FormEvent, startTransition, useEffect, useState } from "react";
-import { BookHero } from "@/src/components/BookHero";
-import { SearchResults } from "@/src/components/SearchResults";
-import { SavedBooksPanel } from "@/src/components/SavedBooksPanel";
+import { SubmitEventHandler, startTransition, useEffect, useState } from "react";
+import BookHero from "@/src/components/BookHero";
+import SearchResults from "@/src/components/SearchResults";
+import SavedBooksPanel from "@/src/components/SavedBooksPanel";
 import { useBookStore } from "@/src/stores/books.store";
 import { useSavedBooksStore } from "@/src/stores/savedBooks.store";
 import { Book } from "@/src/services/models/book.model";
 import dayjs from "dayjs";
 
 const INITIAL_QUERY = "harry potter";
+const INITIAL_PAGINATION = 0;
 
-export default function BookApp() {
-  const [query, setQuery] = useState(INITIAL_QUERY);
-  const [searchTerm, setSearchTerm] = useState(INITIAL_QUERY);
+export default function BookPage() {
+  const [queriedTitle, setQueriedTitle] = useState(INITIAL_QUERY);
+  const [queryTitle, setQueryTitle] = useState(INITIAL_QUERY);
+  const [pagination, setPagination] = useState(INITIAL_PAGINATION);
 
   const books = useBookStore((s) => s.books);
   const isLoading = useBookStore((s) => s.isLoading);
@@ -23,23 +25,19 @@ export default function BookApp() {
   const addOrRemoveBook = useSavedBooksStore((s) => s.addOrRemoveBook);
 
   useEffect(() => {
-    void searchBooks(searchTerm);
-  }, [searchBooks, searchTerm]);
+    void searchBooks(queriedTitle, pagination);
+  }, [searchBooks, queriedTitle, pagination]);
 
-  function handleSearch(event: FormEvent<HTMLFormElement>) {
+  const handleSearch: SubmitEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
 
-    const nextQuery = query.trim();
-
-    if (!nextQuery) {
-      void searchBooks("");
-      return;
-    }
+    const nextQuery = queryTitle.trim();
 
     startTransition(() => {
-      setSearchTerm(nextQuery);
+      setPagination(INITIAL_PAGINATION);
+      setQueriedTitle(nextQuery);
     });
-  }
+  };
 
   function isSaved(bookId: string) {
     return savedBooks.some((book) => book.id === bookId);
@@ -58,10 +56,10 @@ export default function BookApp() {
         <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_26rem]">
           <div>
             <BookHero
-              query={query}
+              queryTitle={queryTitle}
               resultCount={books.length}
               savedCount={savedBooks.length}
-              onQueryChange={setQuery}
+              onQueryChange={setQueryTitle}
               onSearch={handleSearch}
             />
 
@@ -70,8 +68,10 @@ export default function BookApp() {
               error={error}
               isLoading={isLoading}
               isSaved={isSaved}
-              searchTerm={searchTerm}
+              queriedTitle={queriedTitle}
               onToggleSavedBook={onToggleSavedBook}
+              pagination={pagination}
+              setPagination={setPagination}
             />
           </div>
 

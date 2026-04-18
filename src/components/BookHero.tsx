@@ -1,17 +1,17 @@
 "use client";
 
-import { FormEventHandler } from "react";
+import { SubmitEventHandler } from "react";
 
 type BookHeroProps = {
-  query: string;
+  queryTitle: string;
   resultCount: number;
   savedCount: number;
   onQueryChange: (value: string) => void;
-  onSearch: FormEventHandler<HTMLFormElement>;
+  onSearch: SubmitEventHandler<HTMLFormElement>;
 };
 
-export const BookHero = ({
-  query,
+const BookHero = ({
+  queryTitle,
   resultCount,
   savedCount,
   onQueryChange,
@@ -56,7 +56,7 @@ export const BookHero = ({
           id="book-search"
           className="min-h-14 flex-1 rounded-full border border-stone-200 bg-stone-50 px-5 text-base outline-none transition focus:border-amber-500 focus:bg-white"
           placeholder="Search by book title"
-          value={query}
+          value={queryTitle}
           onChange={(event) => onQueryChange(event.target.value)}
         />
         <button
@@ -69,3 +69,5 @@ export const BookHero = ({
     </section>
   );
 };
+
+export default BookHero;

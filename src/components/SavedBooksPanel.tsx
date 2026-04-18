@@ -10,7 +10,7 @@ type SavedBooksPanelProps = {
   onToggleSavedBook: (book: Book) => void;
 };
 
-export const SavedBooksPanel = ({
+const SavedBooksPanel = ({
   books,
   onToggleSavedBook,
 }: SavedBooksPanelProps) => {
@@ -80,3 +80,5 @@ export const SavedBooksPanel = ({
     </aside>
   );
 };
+
+export default SavedBooksPanel;

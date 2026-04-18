@@ -8,15 +8,17 @@ type BooksState = {
   books: Book[];
   isLoading: boolean;
   error: string;
-  searchBooks: (query: string) => Promise<void>;
+  totalPage: number;
+  searchBooks: (title: string, page?: number) => Promise<void>;
 };
 
 export const useBookStore = create<BooksState>()((set) => ({
   books: [],
   isLoading: false,
   error: "",
-  searchBooks: async (query) => {
-    const normalizedQuery = query.trim();
+  totalPage: 1,
+  searchBooks: async (title, pagination = 0) => {
+    const normalizedQuery = title.trim();
 
     if (!normalizedQuery) {
       set({
@@ -36,7 +38,10 @@ export const useBookStore = create<BooksState>()((set) => ({
     });
 
     try {
-      const books = await searchBooksByTitle(normalizedQuery);
+      const { totalPage, books } = await searchBooksByTitle(
+        normalizedQuery,
+        pagination,
+      );
 
       if (latestSearchRequestId !== requestId) {
         return;
@@ -46,6 +51,7 @@ export const useBookStore = create<BooksState>()((set) => ({
         books,
         error: "",
         isLoading: false,
+        totalPage,
       });
     } catch {
       if (latestSearchRequestId !== requestId) {

@@ -9,7 +9,7 @@ type BookCardProps = {
   onToggleSavedBook: (book: Book) => void;
 };
 
-export function BookCard({ book, saved, onToggleSavedBook }: BookCardProps) {
+const BookCard = ({ book, saved, onToggleSavedBook }: BookCardProps) => {
   return (
     <article className="flex h-full flex-col overflow-hidden rounded-[1.5rem] border border-stone-200 bg-stone-50">
       <div className="aspect-[4/3] bg-amber-300 p-4">
@@ -57,4 +57,6 @@ export function BookCard({ book, saved, onToggleSavedBook }: BookCardProps) {
       </div>
     </article>
   );
-}
+};
+
+export default BookCard;

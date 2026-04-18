@@ -13,6 +13,7 @@ type OpenLibraryDoc = {
 };
 
 type OpenLibraryResponse = {
+  numFound: number;
   docs?: OpenLibraryDoc[];
 };
 
@@ -62,11 +63,19 @@ const getCoverUrl = (coverId?: number) => {
   return `https://covers.openlibrary.org/b/id/${coverId}-M.jpg?default=false`;
 };
 
-export const searchBooksByTitle = async (query: string): Promise<Book[]> => {
+export const searchBooksByTitle = async (
+  title: string,
+  pagination: number = 0,
+): Promise<{ totalPage: number; books: Book[] }> => {
+  const limitPerPage = 12;
+
+  const queryString = new URLSearchParams({
+    title,
+    offset: (pagination * limitPerPage).toString(),
+  });
+
   const response = await fetch(
-    `https://openlibrary.org/search.json?title=${encodeURIComponent(
-      query,
-    )}&fields=key,title,author_name,cover_i,first_publish_year,first_sentence&limit=12`,
+    `https://openlibrary.org/search.json?${queryString}&fields=key,title,author_name,cover_i,first_publish_year,first_sentence&limit=${limitPerPage}`,
   );
 
   if (!response.ok) {
@@ -75,13 +84,15 @@ export const searchBooksByTitle = async (query: string): Promise<Book[]> => {
 
   const data = (await response.json()) as OpenLibraryResponse;
 
-  return (
-    data.docs?.map((book) => ({
-      id: book.key,
-      title: book.title ?? "Untitled",
-      authors: book.author_name ?? ["Unknown author"],
-      summary: createSummary(book),
-      coverUrl: getCoverUrl(book.cover_i),
-    })) ?? []
-  );
+  return {
+    totalPage: Math.ceil(data.numFound / limitPerPage),
+    books:
+      data.docs?.map((book) => ({
+        id: book.key,
+        title: book.title ?? "Untitled",
+        authors: book.author_name ?? ["Unknown author"],
+        summary: createSummary(book),
+        coverUrl: getCoverUrl(book.cover_i),
+      })) ?? [],
+  };
 };
